@@ -27,8 +27,18 @@ export default function LoginPage() {
     setAuthError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, data);
+      const params = new URLSearchParams();
+      params.append('username', data.username);
+      params.append('password', data.password);
+
+      const response = await axios.post(`${API_URL}/login`, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
       const { access_token } = response.data;
+
       const isLocalhost = window.location.hostname.includes('localhost');
 
       Cookies.set('token', access_token, {
@@ -45,7 +55,11 @@ export default function LoginPage() {
       window.location.href = mainAppUrl;
     } catch (error: any) {
       console.error(error);
-      setAuthError('Credenciales incorrectas. Verifica tu correo y contraseña.');
+      if (error.response?.status === 401 || error.response?.status === 400) {
+        setAuthError('Credenciales incorrectas. Verifica tu correo y contraseña.');
+      } else {
+        setAuthError('Ocurrió un error al iniciar sesión.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -54,18 +68,18 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background-dark px-4 py-12 font-sans">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo / Header */}
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/30">
-            <span className="material-symbols-outlined text-3xl text-primary">diamond</span>
-          </div>
+          <img
+            src="/imgs/navlogo.png"
+            alt="Hotel Ventura Logo"
+            className="w-auto mx-auto my-0 h-10 md:h-12 mb-10 object-contain"
+          />
           <h2 className="font-serif text-3xl font-bold text-white">Bienvenido</h2>
           <p className="mt-2 text-sm text-slate-400">
             Ingresa tus credenciales para acceder al panel
           </p>
         </div>
 
-        {/* Card del Formulario */}
         <div className="rounded-xl border border-white/10 bg-surface-dark/60 p-8 shadow-2xl backdrop-blur-sm sm:p-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <Input

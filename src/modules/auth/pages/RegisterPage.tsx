@@ -31,7 +31,7 @@ export default function RegisterPage() {
         telefono: data.telefono,
       };
 
-      await axios.post(`${API_URL}/users`, payload);
+      await axios.post(`${API_URL}/register`, payload);
 
       navigate('/auth/login');
     } catch (error: any) {
@@ -40,17 +40,11 @@ export default function RegisterPage() {
       if (axios.isAxiosError(error) && error.response) {
         const detail = error.response.data.detail;
 
-        // Caso 1: Error de Validación de FastAPI (Array de objetos)
         if (Array.isArray(detail)) {
-          // Extraemos el mensaje del primer error de la lista
           setReqError(detail[0].msg || 'Error en los datos enviados');
-        }
-        // Caso 2: Error simple (String directo)
-        else if (typeof detail === 'string') {
+        } else if (typeof detail === 'string') {
           setReqError(detail);
-        }
-        // Caso 3: Objeto desconocido
-        else {
+        } else {
           setReqError('Error al procesar la solicitud');
         }
       } else {
@@ -66,9 +60,11 @@ export default function RegisterPage() {
       <div className="w-full max-w-2xl space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/30">
-            <span className="material-symbols-outlined text-3xl text-primary">person_add</span>
-          </div>
+          <img
+            src="/imgs/navlogo.png"
+            alt="Hotel Ventura Logo"
+            className="w-auto mx-auto my-0 md:h-12 mb-10 object-contain"
+          />
           <h2 className="font-serif text-3xl font-bold text-white">Crear una cuenta</h2>
           <p className="mt-2 text-sm text-slate-400">
             Únete a Hotel Ventura y gestiona tus reservas fácilmente
@@ -94,7 +90,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Fila 2: Cédula y Teléfono (VALIDACIÓN NUMÉRICA Y MAX 10) */}
+            {/* Fila 2: Cédula y Teléfono */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Input
                 label="Cédula"
