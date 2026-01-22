@@ -29,16 +29,30 @@ export default function RegisterPage() {
         password: data.password,
         cedula: data.cedula,
         telefono: data.telefono,
-        role: 'user',
       };
 
-      await axios.post(`${API_URL}/users/`, payload);
+      await axios.post(`${API_URL}/users`, payload);
 
       navigate('/auth/login');
     } catch (error: any) {
       console.error(error);
+
       if (axios.isAxiosError(error) && error.response) {
-        setReqError(error.response.data.detail || 'Error al registrarse');
+        const detail = error.response.data.detail;
+
+        // Caso 1: Error de Validación de FastAPI (Array de objetos)
+        if (Array.isArray(detail)) {
+          // Extraemos el mensaje del primer error de la lista
+          setReqError(detail[0].msg || 'Error en los datos enviados');
+        }
+        // Caso 2: Error simple (String directo)
+        else if (typeof detail === 'string') {
+          setReqError(detail);
+        }
+        // Caso 3: Objeto desconocido
+        else {
+          setReqError('Error al procesar la solicitud');
+        }
       } else {
         setReqError('Ocurrió un error inesperado. Intenta nuevamente.');
       }
