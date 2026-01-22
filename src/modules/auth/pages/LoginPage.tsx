@@ -48,9 +48,7 @@ export default function LoginPage() {
         sameSite: 'Lax',
       });
 
-      const mainAppUrl = isLocalhost
-        ? 'http://localhost:5173/admin'
-        : 'https://hotelventura.com.ec/admin';
+      const mainAppUrl = isLocalhost ? 'http://localhost:5173' : 'https://hotelventura.com.ec';
 
       window.location.href = mainAppUrl;
     } catch (error: any) {
